@@ -22,7 +22,7 @@ pipeline {
                     // Stop previous container
                     sh 'docker rm -f sampleapi-container || true'
                     // Run new container
-                    sh 'docker run -d -p 8081:80 --name sampleapi-container sampleapi-image'
+                    sh 'docker run -d -p 8081:8080 --name sampleapi-container sampleapi-image'
                 }
             }
         }
