@@ -2,21 +2,29 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Docker Hub credentials
+        GIT_CREDENTIALS = credentials('github-creds')     // GitHub username and PAT
         IMAGE_NAME = "santhoshathili/sampleapi"
     }
 
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/SanthoshAthili3101/SampleJenkinsCiCdAPI.git'
+                script {
+                    // Use GitHub credentials to clone private repo
+                    sh """
+                        git config --global credential.helper store
+                        git clone https://${GIT_CREDENTIALS_USR}:${GIT_CREDENTIALS_PSW}@github.com/SanthoshAthili3101/SampleJenkinsCiCdAPI.git
+                        cd SampleJenkinsCiCdAPI
+                    """
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${IMAGE_NAME}")
+                    docker.build("${IMAGE_NAME}", "SampleJenkinsCiCdAPI/")
                 }
             }
         }
@@ -41,4 +49,3 @@ pipeline {
         }
     }
 }
-
