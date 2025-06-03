@@ -11,11 +11,10 @@ pipeline {
         stage('Clone') {
             steps {
                 script {
-                    // Use GitHub credentials to clone private repo
+                    sh 'rm -rf SampleJenkinsCiCdAPI' // Clean up before cloning
                     sh """
-                        git config --global credential.helper store
-                        git clone https://${GIT_CREDENTIALS_USR}:${GIT_CREDENTIALS_PSW}@github.com/SanthoshAthili3101/SampleJenkinsCiCdAPI.git
-                        cd SampleJenkinsCiCdAPI
+                    git config --global credential.helper store
+                    git clone https://${GIT_CREDENTIALS_USR}:${GIT_CREDENTIALS_PSW}@github.com/SanthoshAthili3101/SampleJenkinsCiCdAPI.git
                     """
                 }
             }
