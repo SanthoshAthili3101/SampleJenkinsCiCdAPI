@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        IMAGE_NAME = "santhoshathili/sampleapi"
+    }
+
     stages {
         stage('Clone') {
             steps {
@@ -11,7 +16,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build('sampleapi-image')
+                    docker.build("${IMAGE_NAME}")
                 }
             }
         }
@@ -19,12 +24,21 @@ pipeline {
         stage('Run Container') {
             steps {
                 script {
-                    // Stop previous container
                     sh 'docker rm -f sampleapi-container || true'
-                    // Run new container
-                    sh 'docker run -d -p 8081:8080 --name sampleapi-container sampleapi-image'
+                    sh "docker run -d -p 8081:8080 --name sampleapi-container ${IMAGE_NAME}"
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+                        docker.image("${IMAGE_NAME}").push()
+                    }
                 }
             }
         }
     }
 }
+
