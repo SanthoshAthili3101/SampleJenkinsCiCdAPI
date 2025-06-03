@@ -1,6 +1,0 @@
-@SampleJenkinsCiCd_HostAddress = http://localhost:5187
-
-GET {{SampleJenkinsCiCd_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
