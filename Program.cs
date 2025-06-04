@@ -15,7 +15,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-// this is for triggering the git - 7
+// this is for triggering the git - 8
 
 app.UseAuthorization();
 
