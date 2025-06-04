@@ -3,27 +3,30 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Docker Hub credentials
-        GIT_CREDENTIALS = credentials('github-creds')     // GitHub username and PAT
         IMAGE_NAME = "santhoshathili/sampleapi"
     }
 
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs() // Clean workspace before starting
+            }
+        }
+
         stage('Clone') {
             steps {
-                script {
-                    sh 'rm -rf SampleJenkinsCiCdAPI' // Clean up before cloning
-                    sh """
-                    git config --global credential.helper store
-                    git clone https://${GIT_CREDENTIALS_USR}:${GIT_CREDENTIALS_PSW}@github.com/SanthoshAthili3101/SampleJenkinsCiCdAPI.git
-                    """
-                }
+                git url: 'https://github.com/SanthoshAthili3101/SampleJenkinsCiCdAPI.git',
+                    branch: 'main',
+                    credentialsId: 'github-creds'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build("${IMAGE_NAME}", "SampleJenkinsCiCdAPI/")
+                dir('SampleJenkinsCiCdAPI') {
+                    script {
+                        docker.build("${IMAGE_NAME}")
+                    }
                 }
             }
         }
@@ -45,6 +48,15 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker rm -f sampleapi-container || true' // Clean up container
+        }
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
